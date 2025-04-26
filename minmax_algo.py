@@ -35,7 +35,7 @@ def minimax(depth, node_index, is_maximizing_player, values, alpha, beta):
         return best
 
 # Example values at leaf nodes
-values = [3, 5, 6, 9, 1, 2, 0, -1]
+values = [-1,4,2,6,3,-5,0,7]
 
 # Call minimax
 print("The optimal value is:", minimax(0, 0, True, values, float('-inf'), float('inf')))
