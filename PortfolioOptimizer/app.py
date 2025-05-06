@@ -2,9 +2,9 @@ from flask import Flask, render_template, request, session
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'SESSION_SECURITY'  # Required for session security
+app.secret_key = 'SESSION_SECURITY'  # Replace with your generated key
 
-def knapsack(budget, costs, profits, names):
+def knapsack(budget, costs, profits, names, notes):
     """Optimizes investment portfolio using 0/1 Knapsack algorithm"""
     n = len(costs)
     dp = [[0] * (budget + 1) for _ in range(n + 1)]
@@ -43,6 +43,7 @@ def home():
             names = request.form.getlist('name')
             costs = list(map(int, request.form.getlist('cost')))
             profits = list(map(int, request.form.getlist('profit')))
+            notes = request.form.getlist('note')
             
             # Validate all investments
             for cost, profit in zip(costs, profits):
@@ -50,11 +51,12 @@ def home():
                     raise ValueError("Costs must be positive and profits non-negative")
             
             # Run optimization
-            max_profit, selected_indices = knapsack(budget, costs, profits, names)
+            max_profit, selected_indices = knapsack(budget, costs, profits, names, notes)
             selected_investments = [{
                 'name': names[i],
                 'cost': costs[i],
-                'profit': profits[i]
+                'profit': profits[i],
+                'note': notes[i]  # New notes field
             } for i in selected_indices]
             
             # Store result in history
@@ -72,7 +74,7 @@ def home():
                                 selected=selected_investments,
                                 total_cost=sum(costs[i] for i in selected_indices),
                                 show_result=True,
-                                history=reversed(session['history']),  # Show newest first
+                                history=reversed(session['history']),
                                 error=None)
             
         except Exception as e:

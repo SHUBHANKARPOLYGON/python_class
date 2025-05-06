@@ -1,87 +1,155 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Investment Portfolio Optimizer</title>
     <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .investment {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin: 8px 0;
+        }
+        input {
+            padding: 8px;
+            margin-left: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 10px 5px 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result, .history-entry {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+        }
+        .error {
+            color: red;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
     <div class="container">
-      <h1>💰 Investment Portfolio Optimizer</h1>
-      <form method="POST">
-        <label for="budget">Your Budget ($):</label>
-        <input type="number" name="budget" required />
+        <h1>💰 Investment Portfolio Optimizer</h1>
+        <form method="POST">
+            <label for="budget">Your Budget ($):</label>
+            <input type="number" name="budget" required min="1">
 
-        <div id="investments">
-          <div class="investment">
-            <h3>Investment 1</h3>
-            <label>Name: <input type="text" name="name" required /></label>
-            <label
-              >Cost ($): <input type="number" name="cost" required
-            /></label>
-            <label
-              >Expected Profit ($): <input type="number" name="profit" required
-            /></label>
-          </div>
+            <div id="investments">
+                <div class="investment">
+                    <h3>Investment 1</h3>
+                    <label>Name: <input type="text" name="name" required></label>
+                    <label>Cost ($): <input type="number" name="cost" required min="1"></label>
+                    <label>Expected Profit ($): <input type="number" name="profit" required min="0"></label>
+                    <label>Notes: <input type="text" name="note" placeholder="Risk level, etc."></label>
+                </div>
+            </div>
+
+            <button type="button" onclick="addInvestment()">Add Another Investment</button>
+            <button type="submit">Optimize Portfolio</button>
+        </form>
+
+        {% if show_result %}
+        <div class="result">
+            <h2>📊 Results</h2>
+            <p>Max Profit: <strong>${{ result }}</strong></p>
+            <p>Total Cost: <strong>${{ total_cost }}</strong></p>
+            <p>Selected Investments:</p>
+            <ul>
+                {% for investment in selected %}
+                <li>
+                    {{ investment.name }} (Cost: ${{ investment.cost }}, Profit: ${{ investment.profit }})
+                    {% if investment.note %}<br><em>Notes: {{ investment.note }}</em>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
         </div>
+        {% endif %}
 
-        <button type="button" onclick="addInvestment()">
-          Add Another Investment
-        </button>
-        <button type="submit">Optimize Portfolio</button>
-      </form>
+        {% if history %}
+        <div class="history">
+            <h2>📜 Optimization History</h2>
+            {% for entry in history %}
+            <div class="history-entry">
+                <p><strong>{{ entry.timestamp }}</strong></p>
+                <p>Budget: ${{ entry.budget }}</p>
+                <p>Max Profit: ${{ entry.max_profit }}</p>
+                <p>Total Cost: ${{ entry.total_cost }}</p>
+                <p>Selected Investments:</p>
+                <ul>
+                    {% for investment in entry.selected %}
+                    <li>
+                        {{ investment.name }} (Cost: ${{ investment.cost }}, Profit: ${{ investment.profit }})
+                        {% if investment.note %}<br><em>Notes: {{ investment.note }}</em>{% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-      {% if show_result %}
-      <div class="result">
-        <h2>📊 Results</h2>
-        <p>Max Profit: <strong>${{ result }}</strong></p>
-        <p>Selected Investments: <strong>{{ selected }}</strong></p>
-      </div>
-      {% endif %}
+        {% if error %}
+        <div class="error">
+            <p>Error: {{ error }}</p>
+        </div>
+        {% endif %}
     </div>
-
-    <!-- Add this to your index.html template -->
-    {% if history %}
-    <div class="history">
-      <h3>Optimization History</h3>
-      {% for entry in history %}
-      <div class="history-entry">
-        <p><strong>{{ entry.timestamp }}</strong></p>
-        <p>Budget: ${{ entry.budget }}</p>
-        <p>Max Profit: ${{ entry.max_profit }}</p>
-        <p>Total Cost: ${{ entry.total_cost }}</p>
-        <p>Selected Investments:</p>
-        <ul>
-          {% for investment in entry.selected %}
-          <li>
-            {{ investment.name }} (Cost: ${{ investment.cost }}, Profit: ${{
-            investment.profit }})
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      <hr />
-      {% endfor %}
-    </div>
-    {% endif %} {% if error %}
-    <div class="error">
-      <p style="color: red">Error: {{ error }}</p>
-    </div>
-    {% endif %}
 
     <script>
-      let count = 1;
-      function addInvestment() {
-        count++;
-        const div = document.createElement("div");
-        div.className = "investment";
-        div.innerHTML = `
+        let count = 1;
+        function addInvestment() {
+            count++;
+            const div = document.createElement("div");
+            div.className = "investment";
+            div.innerHTML = `
                 <h3>Investment ${count}</h3>
                 <label>Name: <input type="text" name="name" required></label>
-                <label>Cost ($): <input type="number" name="cost" required></label>
-                <label>Expected Profit ($): <input type="number" name="profit" required></label>
+                <label>Cost ($): <input type="number" name="cost" required min="1"></label>
+                <label>Expected Profit ($): <input type="number" name="profit" required min="0"></label>
+                <label>Notes: <input type="text" name="note" placeholder="Risk level, etc."></label>
             `;
-        document.getElementById("investments").appendChild(div);
-      }
+            document.getElementById("investments").appendChild(div);
+        }
     </script>
-  </body>
+</body>
 </html>
