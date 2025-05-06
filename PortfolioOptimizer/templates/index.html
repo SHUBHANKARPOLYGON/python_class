@@ -1,107 +1,234 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Investment Portfolio Optimizer</title>
+    <title>Investment Portfolio Optimizer with AI</title>
     <link rel="stylesheet" href="/static/style.css" />
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
+            line-height: 1.6;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
         }
         .investment {
-            margin: 15px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f9f9f9;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        .investment:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         label {
             display: block;
-            margin: 8px 0;
+            margin: 10px 0 5px;
+            font-weight: 500;
+            color: #34495e;
         }
         input {
-            padding: 8px;
-            margin-left: 5px;
+            padding: 10px;
+            width: 100%;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
         }
         button {
-            background: #4CAF50;
+            background: #3498db;
             color: white;
             border: none;
-            padding: 10px 15px;
-            margin: 10px 5px 10px 0;
+            padding: 12px 20px;
+            margin: 15px 10px 15px 0;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: background 0.3s;
         }
         button:hover {
-            background: #45a049;
+            background: #2980b9;
+        }
+        button[type="submit"] {
+            background: #2ecc71;
+        }
+        button[type="submit"]:hover {
+            background: #27ae60;
         }
         .result, .history-entry {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #e9f7ef;
-            border-radius: 4px;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #f1f8fe;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .ai-analysis {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .ai-approve {
+            background-color: #e8f5e9;
+            border-color: #2ecc71;
+        }
+        .ai-suggest {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+        }
+        .ai-warn {
+            background-color: #ffebee;
+            border-color: #e74c3c;
         }
         .error {
-            color: red;
-            padding: 10px;
-            margin: 10px 0;
+            color: #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #ffebee;
+            border-radius: 6px;
+            border-left: 4px solid #e74c3c;
         }
         hr {
             border: 0;
             height: 1px;
-            background: #ddd;
-            margin: 20px 0;
+            background: #eee;
+            margin: 25px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>💰 Investment Portfolio Optimizer</h1>
+        <h1>💰 AI-Powered Portfolio Optimizer</h1>
         <form method="POST">
             <label for="budget">Your Budget ($):</label>
-            <input type="number" name="budget" required min="1">
+            <input type="number" name="budget" required min="1" placeholder="e.g. 50000">
 
             <div id="investments">
                 <div class="investment">
                     <h3>Investment 1</h3>
-                    <label>Name: <input type="text" name="name" required></label>
-                    <label>Cost ($): <input type="number" name="cost" required min="1"></label>
-                    <label>Expected Profit ($): <input type="number" name="profit" required min="0"></label>
-                    <label>Notes: <input type="text" name="note" placeholder="Risk level, etc."></label>
+                    <label>Investment Name:</label>
+                    <input type="text" name="name" required placeholder="e.g. Tesla Stock">
+                    <label>Cost ($):</label>
+                    <input type="number" name="cost" required min="1" placeholder="e.g. 5000">
+                    <label>Expected Profit ($):</label>
+                    <input type="number" name="profit" required min="0" placeholder="e.g. 7500">
+                    <label>Risk Notes:</label>
+                    <input type="text" name="note" placeholder="e.g. High risk, tech sector">
                 </div>
             </div>
 
-            <button type="button" onclick="addInvestment()">Add Another Investment</button>
-            <button type="submit">Optimize Portfolio</button>
+            <button type="button" onclick="addInvestment()">
+                ➕ Add Another Investment
+            </button>
+            <button type="submit">
+                🚀 Optimize Portfolio
+            </button>
         </form>
 
         {% if show_result %}
         <div class="result">
-            <h2>📊 Results</h2>
-            <p>Max Profit: <strong>${{ result }}</strong></p>
-            <p>Total Cost: <strong>${{ total_cost }}</strong></p>
-            <p>Selected Investments:</p>
+            <h2>📊 Optimization Results</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">${{ total_cost }}</div>
+                    <div class="metric-label">Total Cost</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${{ result }}</div>
+                    <div class="metric-label">Max Profit</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ selected|length }}</div>
+                    <div class="metric-label">Assets Selected</div>
+                </div>
+            </div>
+
+            <h3>Selected Investments:</h3>
             <ul>
                 {% for investment in selected %}
                 <li>
-                    {{ investment.name }} (Cost: ${{ investment.cost }}, Profit: ${{ investment.profit }})
+                    <strong>{{ investment.name }}</strong>
+                    <br>Cost: ${{ investment.cost }} | Profit: ${{ investment.profit }}
                     {% if investment.note %}<br><em>Notes: {{ investment.note }}</em>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
         </div>
+
+        {% if ai_analysis %}
+        <div class="ai-analysis {% if '✅' in ai_analysis.verdict %}ai-approve{% elif '⚠️' in ai_analysis.verdict %}ai-warn{% else %}ai-suggest{% endif %}">
+            <h2>🧠 AI Portfolio Analysis</h2>
+            <p style="font-size: 18px;"><strong>{{ ai_analysis.verdict }}</strong></p>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">{{ ai_analysis.metrics.risk_level }}/5</div>
+                    <div class="metric-label">Risk Level</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ ai_analysis.metrics.avg_profit_ratio }}</div>
+                    <div class="metric-label">Avg Profit Ratio</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ ai_analysis.metrics.diversification }}</div>
+                    <div class="metric-label">Diversification</div>
+                </div>
+            </div>
+
+            {% if ai_analysis.suggestions %}
+            <div style="margin-top: 20px;">
+                <h3>📝 AI Suggestions:</h3>
+                <ul>
+                    {% for suggestion in ai_analysis.suggestions %}
+                    <li>{{ suggestion }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
         {% endif %}
 
         {% if history %}
@@ -110,18 +237,27 @@
             {% for entry in history %}
             <div class="history-entry">
                 <p><strong>{{ entry.timestamp }}</strong></p>
-                <p>Budget: ${{ entry.budget }}</p>
-                <p>Max Profit: ${{ entry.max_profit }}</p>
-                <p>Total Cost: ${{ entry.total_cost }}</p>
-                <p>Selected Investments:</p>
-                <ul>
-                    {% for investment in entry.selected %}
-                    <li>
-                        {{ investment.name }} (Cost: ${{ investment.cost }}, Profit: ${{ investment.profit }})
-                        {% if investment.note %}<br><em>Notes: {{ investment.note }}</em>{% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
+                <p>Budget: ${{ entry.budget }} | Max Profit: ${{ entry.max_profit }}</p>
+                
+                <details>
+                    <summary>View Details</summary>
+                    <p>Selected Investments:</p>
+                    <ul>
+                        {% for investment in entry.selected %}
+                        <li>
+                            <strong>{{ investment.name }}</strong>
+                            <br>Cost: ${{ investment.cost }} | Profit: ${{ investment.profit }}
+                            {% if investment.note %}<br><em>Notes: {{ investment.note }}</em>{% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    {% if entry.ai_analysis %}
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 4px;">
+                        <p><em>AI Analysis: {{ entry.ai_analysis.verdict }}</em></p>
+                    </div>
+                    {% endif %}
+                </details>
             </div>
             <hr>
             {% endfor %}
@@ -130,7 +266,8 @@
 
         {% if error %}
         <div class="error">
-            <p>Error: {{ error }}</p>
+            <h3>⚠️ Error</h3>
+            <p>{{ error }}</p>
         </div>
         {% endif %}
     </div>
@@ -143,12 +280,19 @@
             div.className = "investment";
             div.innerHTML = `
                 <h3>Investment ${count}</h3>
-                <label>Name: <input type="text" name="name" required></label>
-                <label>Cost ($): <input type="number" name="cost" required min="1"></label>
-                <label>Expected Profit ($): <input type="number" name="profit" required min="0"></label>
-                <label>Notes: <input type="text" name="note" placeholder="Risk level, etc."></label>
+                <label>Investment Name:</label>
+                <input type="text" name="name" required placeholder="e.g. Apple Stock">
+                <label>Cost ($):</label>
+                <input type="number" name="cost" required min="1" placeholder="e.g. 3000">
+                <label>Expected Profit ($):</label>
+                <input type="number" name="profit" required min="0" placeholder="e.g. 4500">
+                <label>Risk Notes:</label>
+                <input type="text" name="note" placeholder="e.g. Medium risk, stable">
             `;
             document.getElementById("investments").appendChild(div);
+            
+            // Smooth scroll to new investment
+            div.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
