@@ -1,52 +1,87 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Investment Portfolio Optimizer</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
     <div class="container">
-        <h1>💰 Investment Portfolio Optimizer</h1>
-        <form method="POST">
-            <label for="budget">Your Budget ($):</label>
-            <input type="number" name="budget" required>
-            
-            <div id="investments">
-                <div class="investment">
-                    <h3>Investment 1</h3>
-                    <label>Name: <input type="text" name="name" required></label>
-                    <label>Cost ($): <input type="number" name="cost" required></label>
-                    <label>Expected Profit ($): <input type="number" name="profit" required></label>
-                </div>
-            </div>
-            
-            <button type="button" onclick="addInvestment()">Add Another Investment</button>
-            <button type="submit">Optimize Portfolio</button>
-        </form>
+      <h1>💰 Investment Portfolio Optimizer</h1>
+      <form method="POST">
+        <label for="budget">Your Budget ($):</label>
+        <input type="number" name="budget" required />
 
-        {% if show_result %}
-            <div class="result">
-                <h2>📊 Results</h2>
-                <p>Max Profit: <strong>${{ result }}</strong></p>
-                <p>Selected Investments: <strong>{{ selected }}</strong></p>
-            </div>
-        {% endif %}
+        <div id="investments">
+          <div class="investment">
+            <h3>Investment 1</h3>
+            <label>Name: <input type="text" name="name" required /></label>
+            <label
+              >Cost ($): <input type="number" name="cost" required
+            /></label>
+            <label
+              >Expected Profit ($): <input type="number" name="profit" required
+            /></label>
+          </div>
+        </div>
+
+        <button type="button" onclick="addInvestment()">
+          Add Another Investment
+        </button>
+        <button type="submit">Optimize Portfolio</button>
+      </form>
+
+      {% if show_result %}
+      <div class="result">
+        <h2>📊 Results</h2>
+        <p>Max Profit: <strong>${{ result }}</strong></p>
+        <p>Selected Investments: <strong>{{ selected }}</strong></p>
+      </div>
+      {% endif %}
     </div>
 
+    <!-- Add this to your index.html template -->
+    {% if history %}
+    <div class="history">
+      <h3>Optimization History</h3>
+      {% for entry in history %}
+      <div class="history-entry">
+        <p><strong>{{ entry.timestamp }}</strong></p>
+        <p>Budget: ${{ entry.budget }}</p>
+        <p>Max Profit: ${{ entry.max_profit }}</p>
+        <p>Total Cost: ${{ entry.total_cost }}</p>
+        <p>Selected Investments:</p>
+        <ul>
+          {% for investment in entry.selected %}
+          <li>
+            {{ investment.name }} (Cost: ${{ investment.cost }}, Profit: ${{
+            investment.profit }})
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <hr />
+      {% endfor %}
+    </div>
+    {% endif %} {% if error %}
+    <div class="error">
+      <p style="color: red">Error: {{ error }}</p>
+    </div>
+    {% endif %}
+
     <script>
-        let count = 1;
-        function addInvestment() {
-            count++;
-            const div = document.createElement('div');
-            div.className = 'investment';
-            div.innerHTML = `
+      let count = 1;
+      function addInvestment() {
+        count++;
+        const div = document.createElement("div");
+        div.className = "investment";
+        div.innerHTML = `
                 <h3>Investment ${count}</h3>
                 <label>Name: <input type="text" name="name" required></label>
                 <label>Cost ($): <input type="number" name="cost" required></label>
                 <label>Expected Profit ($): <input type="number" name="profit" required></label>
             `;
-            document.getElementById('investments').appendChild(div);
-        }
+        document.getElementById("investments").appendChild(div);
+      }
     </script>
-</body>
+  </body>
 </html>

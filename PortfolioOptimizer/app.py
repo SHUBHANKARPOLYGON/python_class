@@ -1,11 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
+from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = 'SESSION_SECURITY'  # Required for session security
 
 def knapsack(budget, costs, profits, names):
+    """Optimizes investment portfolio using 0/1 Knapsack algorithm"""
     n = len(costs)
     dp = [[0] * (budget + 1) for _ in range(n + 1)]
     
+    # Build DP table
     for i in range(1, n + 1):
         for w in range(1, budget + 1):
             if costs[i-1] <= w:
@@ -13,6 +17,7 @@ def knapsack(budget, costs, profits, names):
             else:
                 dp[i][w] = dp[i-1][w]
     
+    # Backtrack to find selected investments
     selected = []
     w = budget
     for i in range(n, 0, -1):
@@ -24,22 +29,62 @@ def knapsack(budget, costs, profits, names):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    if request.method == 'POST':
-        budget = int(request.form['budget'])
-        investments = []
-        names = request.form.getlist('name')
-        costs = list(map(int, request.form.getlist('cost')))
-        profits = list(map(int, request.form.getlist('profit')))
-        
-        max_profit, selected_indices = knapsack(budget, costs, profits, names)
-        selected_investments = [names[i] for i in selected_indices]
-        
-        return render_template('index.html', 
-                             result=max_profit, 
-                             selected=selected_investments, 
-                             show_result=True)
+    # Initialize session history if it doesn't exist
+    if 'history' not in session:
+        session['history'] = []
     
-    return render_template('index.html', show_result=False)
+    if request.method == 'POST':
+        try:
+            # Validate inputs
+            budget = int(request.form['budget'])
+            if budget <= 0:
+                raise ValueError("Budget must be positive")
+                
+            names = request.form.getlist('name')
+            costs = list(map(int, request.form.getlist('cost')))
+            profits = list(map(int, request.form.getlist('profit')))
+            
+            # Validate all investments
+            for cost, profit in zip(costs, profits):
+                if cost <= 0 or profit < 0:
+                    raise ValueError("Costs must be positive and profits non-negative")
+            
+            # Run optimization
+            max_profit, selected_indices = knapsack(budget, costs, profits, names)
+            selected_investments = [{
+                'name': names[i],
+                'cost': costs[i],
+                'profit': profits[i]
+            } for i in selected_indices]
+            
+            # Store result in history
+            session['history'].append({
+                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'budget': budget,
+                'max_profit': max_profit,
+                'selected': selected_investments,
+                'total_cost': sum(costs[i] for i in selected_indices)
+            })
+            session.modified = True
+            
+            return render_template('index.html',
+                                result=max_profit,
+                                selected=selected_investments,
+                                total_cost=sum(costs[i] for i in selected_indices),
+                                show_result=True,
+                                history=reversed(session['history']),  # Show newest first
+                                error=None)
+            
+        except Exception as e:
+            return render_template('index.html',
+                                show_result=False,
+                                history=reversed(session['history']),
+                                error=str(e))
+    
+    return render_template('index.html',
+                         show_result=False,
+                         history=reversed(session['history']),
+                         error=None)
 
 if __name__ == '__main__':
     app.run(debug=True)
