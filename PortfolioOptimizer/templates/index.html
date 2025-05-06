@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Investment Portfolio Optimizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Investment Portfolio Optimizer</h1>
+        <form method="POST">
+            <label for="budget">Your Budget ($):</label>
+            <input type="number" name="budget" required>
+            
+            <div id="investments">
+                <div class="investment">
+                    <h3>Investment 1</h3>
+                    <label>Name: <input type="text" name="name" required></label>
+                    <label>Cost ($): <input type="number" name="cost" required></label>
+                    <label>Expected Profit ($): <input type="number" name="profit" required></label>
+                </div>
+            </div>
+            
+            <button type="button" onclick="addInvestment()">Add Another Investment</button>
+            <button type="submit">Optimize Portfolio</button>
+        </form>
+
+        {% if show_result %}
+            <div class="result">
+                <h2>📊 Results</h2>
+                <p>Max Profit: <strong>${{ result }}</strong></p>
+                <p>Selected Investments: <strong>{{ selected }}</strong></p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        let count = 1;
+        function addInvestment() {
+            count++;
+            const div = document.createElement('div');
+            div.className = 'investment';
+            div.innerHTML = `
+                <h3>Investment ${count}</h3>
+                <label>Name: <input type="text" name="name" required></label>
+                <label>Cost ($): <input type="number" name="cost" required></label>
+                <label>Expected Profit ($): <input type="number" name="profit" required></label>
+            `;
+            document.getElementById('investments').appendChild(div);
+        }
+    </script>
+</body>
+</html>
