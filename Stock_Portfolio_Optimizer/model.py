@@ -12,7 +12,7 @@ data = {
     'approval': np.where((np.random.uniform(0, 1, 1000) > 0.3), 1, 0)
 }
 df = pd.DataFrame(data)
-
+        
 # Train model
 X = df[['risk_level', 'profit_ratio', 'diversification']]
 y = df['approval']
