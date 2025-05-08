@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, jsonify, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for
 from datetime import datetime
 import numpy as np
 import pandas as pd
