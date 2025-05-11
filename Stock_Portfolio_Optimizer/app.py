@@ -6,11 +6,13 @@ from sklearn.ensemble import RandomForestClassifier
 import joblib
 import os
 import uuid
+import streamlit as st
 
 app = Flask(__name__)
 app.secret_key = 'SESSION_SECURITY'  # Secure random key
 
 # Initialize AI model
+@st.cache_resource
 def initialize_model():
     model_path = 'portfolio_model.joblib'
     if not os.path.exists(model_path):
